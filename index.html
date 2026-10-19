@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instasurrance — WhatsApp AI Health Broker MVP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Cairo', 'sans-serif'],
+            arabic: ['Cairo', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#0088EB',
+              primaryDark: '#0061A7',
+              primaryHover: '#007CD6',
+              cyan: '#149ADE',
+              sky: '#02B3FF',
+              heroBg: '#E0F1FD',
+              lightBg: '#E6F7FF',
+              cardBlue: '#D6F3FF',
+              green: '#1DB97D',
+              greenDark: '#279E6F',
+              greenLight: '#E4F9F1',
+              amber: '#F99B1C',
+              red: '#EF4547',
+              navy: '#121733',
+              slateDark: '#0F172A',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', 'Cairo', sans-serif;
+      background-color: #E0F1FD;
+      color: #0F172A;
+    }
+    .whatsapp-wallpaper {
+      background-color: #F0F6FC;
+      background-image: radial-gradient(#CBD5E1 0.85px, transparent 0.85px);
+      background-size: 18px 18px;
+    }
+    .contract-font-9 {
+      font-size: 9.5px;
+      line-height: 1.45;
+      font-family: 'Times New Roman', Georgia, serif;
+    }
+    @keyframes pulse-dot {
+      0% { box-shadow: 0 0 0 0 rgba(39, 221, 151, 0.6); }
+      70% { box-shadow: 0 0 0 7px rgba(39, 221, 151, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(39, 221, 151, 0); }
+    }
+    .live-dot {
+      animation: pulse-dot 2s infinite;
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+  <!-- 1. FIXED TOP BANNER: LIVE TYPESAFE JEV 1.14 + GEMINI TOKEN & COST CALCULATOR -->
+  <div class="h-11 bg-brand-navy text-white border-b border-slate-700/80 px-4 flex items-center justify-between text-xs shrink-0 z-50 overflow-x-auto whitespace-nowrap gap-4">
+    <div class="flex items-center gap-3">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-green/20 text-[#27DD97] font-bold border border-brand-green/40">
+        <span class="w-2 h-2 rounded-full bg-[#27DD97] live-dot"></span>
+        TYPESAFE JEV 1.14 + GEMINI
+      </span>
+      <span id="model-badge" class="text-slate-300 font-mono text-[11px]">jev-1.14.0 + gemini-3.5-flash-lite</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-slate-800/90 px-3 py-1 rounded border border-slate-700">
+        <span class="text-slate-400">Turns:</span>
+        <span id="telemetry-turns" class="font-bold text-white">1</span>
+        <span class="text-slate-600">|</span>
+        <span class="text-slate-400">Real Tokens:</span>
+        <span id="telemetry-tokens" class="font-mono font-bold text-brand-sky">0</span>
+        <span class="text-slate-600">|</span>
+        <span class="text-slate-400">Session Cost:</span>
+        <span id="telemetry-cost" class="font-mono font-bold text-[#27DD97]">$0.0000</span>
+        <span class="text-[10px] text-slate-400">(Est. ~$0.85 full journey)</span>
+      </div>
+
+      <div class="hidden md:flex items-center gap-2 bg-slate-800/90 px-3 py-1 rounded border border-slate-700">
+        <span class="text-slate-400">HR Typing:</span>
+        <span class="font-bold text-[#27DD97]">1 Field (Email Only)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. WHATSAPP-STYLE SPLIT CONTAINER (NAKED MVP WITH #0088EB / #E0F1FD / #1DB97D PALETTE) -->
+  <div class="grow flex overflow-hidden max-w-[1440px] w-full mx-auto my-0 lg:my-3 lg:rounded-2xl lg:shadow-xl lg:border lg:border-slate-200/90 bg-white">
+
+    <!-- LEFT SIDEBAR: WhatsApp Thread + Zero-Form Identity + Live Predetermined Packages -->
+    <aside class="w-80 xl:w-96 border-r border-slate-200 flex flex-col bg-white shrink-0 hidden md:flex">
+      <!-- Sidebar Top Brand Bar -->
+      <div class="p-3.5 bg-gradient-to-r from-brand-primaryDark to-brand-primary text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center font-extrabold text-base border border-white/25">
+            ⚡
+          </div>
+          <div>
+            <div class="font-extrabold text-sm tracking-tight flex items-center gap-1.5">
+              <span>Instasurrance</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/20 font-bold uppercase">MVP</span>
+            </div>
+            <div class="text-[11px] text-sky-100">Instant SME Health Broker Chat</div>
+          </div>
+        </div>
+        <button onclick="openCertificateModal()" class="text-[11px] font-bold bg-brand-green hover:bg-brand-greenDark text-white px-2.5 py-1.5 rounded-lg shadow-2xs cursor-pointer transition">
+          📜 Blame Shield
+        </button>
+      </div>
+
+      <!-- Auto-Captured WhatsApp Identity + 1 Email Field -->
+      <div class="p-3 bg-brand-heroBg/70 border-b border-brand-primary/15 space-y-2">
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="font-extrabold text-brand-primaryDark uppercase tracking-wider">WhatsApp Auto-Captured</span>
+          <span class="text-brand-greenDark font-bold">✓ Zero Forms</span>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+          <div class="bg-white px-2.5 py-1.5 rounded border border-slate-200/80">
+            <span class="text-slate-400 block text-[9px]">WhatsApp Name</span>
+            <span class="font-bold text-slate-800">Nadia (HR Manager)</span>
+          </div>
+          <div class="bg-white px-2.5 py-1.5 rounded border border-slate-200/80">
+            <span class="text-slate-400 block text-[9px]">WhatsApp Phone</span>
+            <span class="font-mono font-bold text-slate-800">+966 55 419 8821</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded border border-brand-primary/40">
+          <span class="text-[10px] font-bold text-slate-500 shrink-0">Work Email:</span>
+          <input id="hr-email" type="email" value="nadia.hr@alnoor-ksa.com" class="text-xs font-semibold text-slate-900 w-full focus:outline-none" />
+        </div>
+      </div>
+
+      <!-- Active WhatsApp Chat Thread Item -->
+      <div class="px-3 py-2.5 border-b border-slate-100 bg-brand-lightBg/60 flex items-center gap-3">
+        <div class="relative shrink-0">
+          <div class="w-11 h-11 rounded-full bg-brand-primary text-white font-extrabold flex items-center justify-center text-sm shadow-xs">
+            AI
+          </div>
+          <span class="w-3 h-3 rounded-full bg-brand-green border-2 border-white absolute bottom-0 right-0"></span>
+        </div>
+        <div class="min-w-0 grow">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-xs text-slate-900 truncate">Instasurrance AI Broker</span>
+            <span class="text-[10px] font-bold text-brand-primary">Live</span>
+          </div>
+          <div class="text-[11px] text-slate-600 truncate">
+            Supervised by <strong>Tariq Al-Mansour</strong> (Acct Mgr)
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE PREDETERMINED PACKAGES MATCHER (Hidden until first estimate is done!) -->
+      <div class="p-3.5 overflow-y-auto grow space-y-2.5 bg-slate-50/60">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-brand-primary">On-The-Spot Matching</span>
+            <h3 class="text-xs font-extrabold text-slate-900">Predetermined Health Packages</h3>
+          </div>
+          <span id="sidebar-headcount" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-600">
+            Awaiting Estimate
+          </span>
+        </div>
+
+        <!-- Empty State shown BEFORE first estimate is done -->
+        <div id="packages-empty-state" class="p-5 rounded-xl border border-dashed border-brand-primary/40 bg-brand-heroBg/40 text-center space-y-2.5 my-2">
+          <div class="w-10 h-10 rounded-full bg-white border border-brand-primary/20 flex items-center justify-center mx-auto text-lg shadow-2xs">
+            📊
+          </div>
+          <div class="font-extrabold text-xs text-slate-800">No Estimate Generated Yet</div>
+          <p class="text-[11px] text-slate-600 leading-relaxed">
+            Package suggestions appear here only after your <strong>first estimate</strong> is run. Drop your old policy PDF/scan or tell the AI your headcount &amp; requirements in chat.
+          </p>
+          <button onclick="sendSampleContractScan()" class="w-full py-2 px-3 rounded-lg bg-brand-primary hover:bg-brand-primaryHover text-white font-bold text-[11px] shadow-2xs transition cursor-pointer">
+            ⚡ Run First Estimate (Scan 9pt Contract)
+          </button>
+        </div>
+
+        <!-- 3 Package Suggestions Container (Hidden initially until first estimate is done) -->
+        <div id="packages-list-container" class="hidden space-y-2.5">
+          <!-- Package 1: Gold Plus -->
+          <div id="pkg-card-gold_plus" class="p-3 rounded-xl border-2 border-brand-primary bg-white shadow-2xs transition-all">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-extrabold text-xs text-slate-900">SME Gold Plus</span>
+              <span id="pkg-score-gold_plus" class="text-sm font-extrabold text-brand-primary">96% Match</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-2">
+              <div id="pkg-bar-gold_plus" class="h-full bg-brand-primary rounded-full transition-all duration-500" style="width: 96%"></div>
+            </div>
+            <p id="pkg-reason-gold_plus" class="text-[11px] text-slate-600 leading-snug mb-2">
+              🟢 SAR 2,000 Optical (Above Standard) • 🟢 60-Day Claim Window • 🔵 10% Copay (Max 50 SAR)
+            </p>
+            <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 text-[11px]">
+              <span class="font-extrabold text-slate-900">SAR 3,790 <span class="font-normal text-slate-500">/ member</span></span>
+              <span class="text-[10px] font-bold text-brand-greenDark bg-brand-greenLight px-2 py-0.5 rounded">⚡ Instant Buy</span>
+            </div>
+          </div>
+
+          <!-- Package 2: Business Care Silver -->
+          <div id="pkg-card-silver_care" class="p-3 rounded-xl border border-slate-200 bg-white transition-all">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-xs text-slate-800">Business Care Silver</span>
+              <span id="pkg-score-silver_care" class="text-xs font-extrabold text-brand-cyan">84% Match</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-1.5">
+              <div id="pkg-bar-silver_care" class="h-full bg-brand-cyan rounded-full transition-all duration-500" style="width: 84%"></div>
+            </div>
+            <p id="pkg-reason-silver_care" class="text-[11px] text-slate-500 leading-snug mb-1.5">
+              🔵 SAR 1,000 Optical (Standard) • 🔵 30-Day Claim Window • 20% Copay (Max 75 SAR)
+            </p>
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="font-bold text-slate-800">SAR 3,270 <span class="font-normal text-slate-500">/ member</span></span>
+              <span class="text-[10px] text-slate-500">Instant Tier</span>
+            </div>
+          </div>
+
+          <!-- Package 3: Essential Saver -->
+          <div id="pkg-card-essential_saver" class="p-3 rounded-xl border border-slate-200 bg-white transition-all">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-xs text-slate-800">Essential Saver SME</span>
+              <span id="pkg-score-essential_saver" class="text-xs font-extrabold text-slate-500">68% Match</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-1.5">
+              <div id="pkg-bar-essential_saver" class="h-full bg-slate-400 rounded-full transition-all duration-500" style="width: 68%"></div>
+            </div>
+            <p id="pkg-reason-essential_saver" class="text-[11px] text-slate-500 leading-snug mb-1.5">
+              🔴 SAR 500 Optical (Below Standard) • 🔴 90-Day Maternity Wait
+            </p>
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="font-bold text-slate-800">SAR 2,730 <span class="font-normal text-slate-500">/ member</span></span>
+              <span class="text-[10px] text-slate-500">Budget Tier</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN WHATSAPP CHAT PANEL -->
+    <section class="grow flex flex-col bg-white overflow-hidden">
+      <!-- WhatsApp Chat Header -->
+      <div class="px-4 py-3 bg-white border-b border-slate-200 flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-primary to-brand-cyan text-white font-extrabold flex items-center justify-center text-sm shadow-xs">
+              AI
+            </div>
+            <span class="w-2.5 h-2.5 rounded-full bg-brand-green border-2 border-white absolute bottom-0 right-0"></span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-extrabold text-sm text-slate-900">Instasurrance AI Broker</h1>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-brand-greenLight text-brand-greenDark border border-brand-green/30">
+                Disclosed AI • Human Overseen
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-500">
+              Speaking on behalf of Senior Account Manager <strong>Tariq Al-Mansour (Lic #IA-8842)</strong> • Zero-Blame HR Guarantee
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="openContractDrawer()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-heroBg text-brand-primaryDark hover:bg-brand-cardBlue transition cursor-pointer">
+            📑 View 9pt Contract Boxes
+          </button>
+          <button onclick="openHandoverModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-primary hover:bg-brand-primaryHover text-white transition cursor-pointer">
+            Complete & Handover →
+          </button>
+        </div>
+      </div>
+
+      <!-- WHATSAPP MESSAGE STREAM -->
+      <div id="chat-stream" class="whatsapp-wallpaper grow p-4 sm:p-6 overflow-y-auto space-y-3 flex flex-col">
+
+        <!-- System Encryption / Disclosure Banner (WhatsApp style) -->
+        <div class="self-center max-w-lg text-center bg-[#FFF8C5] text-slate-700 text-[11px] px-3.5 py-1.5 rounded-lg shadow-2xs border border-amber-200/80">
+          🔒 <strong>AI Transparency & HR Protection:</strong> You are chatting with Instasurrance's AI Broker assistant, overseen by Account Manager <strong>Tariq Al-Mansour</strong>. Every contract clause is benchmarked as <strong>Above Standard</strong>, <strong>Standard</strong>, or <strong>Below Standard</strong> so HR is never blamed.
+        </div>
+
+        <!-- Initial AI Greeting Bubble -->
+        <div class="max-w-[85%] sm:max-w-[75%] bg-white rounded-2xl rounded-tl-xs p-3.5 shadow-xs border border-slate-200/80 self-start">
+          <div class="flex items-center justify-between gap-3 mb-1">
+            <span class="text-[11px] font-extrabold text-brand-primaryDark">Instasurrance AI • Supervised by Tariq Al-Mansour</span>
+            <span class="text-[10px] text-slate-400">Online</span>
+          </div>
+          <div class="text-xs text-slate-700 leading-relaxed space-y-1.5">
+            <p>Marhaba <strong>Nadia</strong> 👋 I already have your name and phone number from WhatsApp, plus your email (<code>nadia.hr@alnoor-ksa.com</code>) — so you don't need to fill out any forms.</p>
+            <p>Simply <strong>drop your old policy PDF / census file</strong> or tell me what matters most (e.g. optical limit, maternity, hospital network, co-pay) and I'll match our predetermined packages on the spot and decode the font-size-9 contract clauses for you.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 1-CLICK LIVE TYPESAFE JEV 1.14 + GEMINI TEST PROMPTS BAR -->
+      <div class="px-4 py-2 bg-slate-50 border-t border-slate-200 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+        <span class="text-[10px] font-extrabold uppercase text-slate-400 mr-1 shrink-0">Live Tests:</span>
+        <button onclick="sendSampleContractScan()" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-brand-green hover:bg-brand-greenDark text-white transition shrink-0 cursor-pointer">
+          🖼️ Scan 9pt Contract Image (Jev 1.14 Box)
+        </button>
+        <button onclick="sendSampleContractDump()" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-brand-primary text-white hover:bg-brand-primaryHover transition shrink-0 cursor-pointer">
+          📄 Dump Old 9pt Contract + 84-Member Census
+        </button>
+        <button onclick="sendQuickPrompt('We had complaints last year because optical was only 500 SAR. We need at least 2,000 SAR optical, zero-wait maternity, and fast claim reporting.')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white text-slate-700 border border-slate-300 hover:border-brand-primary hover:text-brand-primary transition shrink-0 cursor-pointer">
+          🎯 Set Hard No's (Optical ≥ 2,000 SAR)
+        </button>
+        <button onclick="sendQuickPrompt('I want 0% copay (zero deductible) on all outpatient visits.')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 transition shrink-0 cursor-pointer">
+          ⚠️ Ask for "0% Copay" (3-Day SLA Warning)
+        </button>
+        <button onclick="sendQuickPrompt('Can you give me a 20% discount on the Gold Plus package if I sign today?')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-900 border border-purple-300 hover:bg-purple-100 transition shrink-0 cursor-pointer">
+          🛡️ Guardrail: "Give me a 20% discount"
+        </button>
+        <button onclick="sendQuickPrompt('Shut up, these insurance contracts are stupid and you are useless!')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-900 border border-rose-300 hover:bg-rose-100 transition shrink-0 cursor-pointer">
+          🛡️ Guardrail: "Shut up / insult"
+        </button>
+      </div>
+
+      <!-- Pending Attachment Preview -->
+      <div id="attachment-banner" class="hidden px-4 py-2 bg-brand-heroBg border-t border-brand-primary/20 items-center justify-between text-xs">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-brand-primaryDark">📎 Attached for Jev 1.14 + Gemini Analysis:</span>
+          <span id="attachment-name" class="font-mono text-slate-800"></span>
+        </div>
+        <button onclick="clearAttachment()" class="text-rose-600 font-bold hover:underline cursor-pointer">Remove ✕</button>
+      </div>
+
+      <!-- WHATSAPP INPUT COMPOSER -->
+      <div class="p-3 bg-[#F0F2F5] border-t border-slate-200 flex items-center gap-2 shrink-0">
+        <label title="Upload Contract PDF, Census CSV/TXT, or Image" class="p-2.5 rounded-full bg-white hover:bg-brand-heroBg text-slate-600 hover:text-brand-primary border border-slate-200 transition cursor-pointer shrink-0">
+          <input id="file-input" type="file" accept=".pdf,.txt,.csv,.json,image/*" class="hidden" onchange="handleFileSelect(event)" />
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+        </label>
+
+        <input
+          id="chat-input"
+          type="text"
+          placeholder="Type a message to Instasurrance AI (or upload your policy PDF/scan)..."
+          class="grow bg-white border border-slate-200 rounded-full px-4 py-2.5 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-brand-primary shadow-2xs"
+          onkeydown="if(event.key==='Enter') sendUserMessage()"
+        />
+
+        <button
+          id="send-btn"
+          onclick="sendUserMessage()"
+          class="px-5 py-2.5 rounded-full bg-brand-primary hover:bg-brand-primaryHover text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer shrink-0 flex items-center gap-1.5"
+        >
+          <span>Send</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- 3. DRAWER / MODAL: "FONT-SIZE 9" CONTRACT SIMPLIFIER WITH BOUNDED BOXES -->
+  <div id="contract-drawer" class="fixed inset-0 z-50 bg-slate-900/65 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[88vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="p-4 bg-brand-navy text-white flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-brand-primary text-white">
+            "Font-Size 9" Contract Decoder (Jev 1.14 Box + Gemini)
+          </span>
+          <h3 class="text-base font-extrabold mt-1">
+            Color-Coded Bounded Boxes: Standard vs. Above Standard vs. Coverage Gaps
+          </h3>
+        </div>
+        <button onclick="closeContractDrawer()" class="text-slate-300 hover:text-white text-xl font-bold px-2 cursor-pointer">✕</button>
+      </div>
+
+      <div id="contract-clauses-list" class="p-5 overflow-y-auto space-y-4 bg-slate-100 grow">
+        <!-- Populated dynamically from Gemini or default clauses -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. MODAL: HR "BLAME SHIELD" CERTIFICATE -->
+  <div id="certificate-modal" class="fixed inset-0 z-50 bg-slate-900/65 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex items-start justify-between border-b border-slate-200 pb-3 mb-4">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-brand-greenLight text-brand-greenDark">
+            HR Decision Protection ("Blame Shield")
+          </span>
+          <h3 class="text-lg font-extrabold text-slate-900 mt-1">
+            Co-Signed Coverage Benchmark Certificate
+          </h3>
+        </div>
+        <button onclick="closeCertificateModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg cursor-pointer">✕</button>
+      </div>
+      <p class="text-xs text-slate-600 leading-relaxed mb-3">
+        To protect HR from internal blame if an employee disputes coverage, every selected package comes with an official audit record co-signed by your human Senior Account Manager:
+      </p>
+      <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1.5 mb-4">
+        <div>🟢 <strong>Clause 4.2 (60-Day Claim Reporting):</strong> Certified <strong>Above Market Standard</strong> (vs. 30-day norm).</div>
+        <div>🟢 <strong>Clause 9.4 (SAR 2,000 Optical):</strong> Certified <strong>Above Market Standard</strong> (2x market norm).</div>
+        <div>🔵 <strong>Clause 7.1 (PDPL & GDPR Data Privacy):</strong> Certified <strong>Market Standard</strong>.</div>
+        <div>🔴 <strong>Clause 11.3 (Physiotherapy 12 Sessions):</strong> Disclosed Gap vs. 20-session prior policy (Optional rider offered).</div>
+      </div>
+      <div class="flex items-center justify-between pt-3 border-t border-slate-200 text-xs">
+        <div>
+          <div class="font-extrabold text-slate-900">Tariq Al-Mansour</div>
+          <div class="text-brand-primaryDark font-semibold">Senior Account Manager • Responsible Supervisor for Instasurrance AI</div>
+        </div>
+        <button onclick="closeCertificateModal()" class="px-4 py-2 rounded-lg bg-brand-primary text-white font-bold cursor-pointer">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. MODAL: POST-SUBMIT DATA HANDLING & HANDOVER -->
+  <div id="handover-modal" class="fixed inset-0 z-50 bg-slate-900/65 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex items-start justify-between border-b border-slate-200 pb-3 mb-4">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-brand-heroBg text-brand-primaryDark">
+            Post-Submit Data Handling & Plug-and-Play Handover
+          </span>
+          <h3 class="text-lg font-extrabold text-slate-900 mt-1">
+            Zero-Friction WhatsApp Data Flow → Instant Policy Issuance
+          </h3>
+        </div>
+        <button onclick="closeHandoverModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg cursor-pointer">✕</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs mb-4">
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-extrabold text-brand-primaryDark">1. WhatsApp Identity</div>
+          <p class="text-slate-600 mt-1">Name + phone come from WhatsApp automatically. HR only typed 1 work email.</p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-extrabold text-brand-primaryDark">2. Document Extraction</div>
+          <p class="text-slate-600 mt-1">CR number, 84 lives census, and prior sub-limits parsed from the dumped contract.</p>
+        </div>
+        <div class="p-3 rounded-xl bg-brand-greenLight/60 border border-brand-green/40">
+          <div class="font-extrabold text-brand-greenDark">3. API Handover</div>
+          <p class="text-slate-700 mt-1">Structured JSON payload triggers existing checkout workflow with zero manual re-entry.</p>
+        </div>
+      </div>
+      <pre id="handover-json" class="bg-brand-navy text-sky-200 p-4 rounded-xl text-[11px] font-mono overflow-x-auto"></pre>
+    </div>
+  </div>
+
+  <script>
+    const chatHistory = [];
+    let totalTurns = 1;
+    let totalTokens = 0;
+    let totalCostUsd = 0;
+    let pendingAttachment = null;
+    let estimateAlreadyDone = false;
+    let latestImageBoxes = null;
+
+    let latestClauses = [
+      {
+        clause_ref: 'Clause 4.2',
+        title: 'Claim Notification & Reimbursement Window (60 Days)',
+        legal_text_9pt: 'SECTION 4.2 — REIMBURSEMENT NOTIFICATION: The Policyholder and Insured Beneficiaries shall be granted sixty (60) calendar days from service discharge to submit out-of-network or emergency reimbursement claims.',
+        plain_explanation: 'This box is ABOVE STANDARD because you are granted 60 days instead of the standard 30 days to report and submit a health claim.',
+        benchmark: 'ABOVE_STANDARD',
+        gap_vs_old_policy: 'Upgraded from 30 days in your 2025 contract → 60 days (+100%)'
+      },
+      {
+        clause_ref: 'Clause 7.1',
+        title: 'PDPL & GDPR Medical Data Privacy Protection',
+        legal_text_9pt: 'SECTION 7.1 — DATA PROTECTION & PRIVACY: All member diagnostic codes (ICD-10) and claims utilization records are processed strictly under PDPL and GDPR privacy safeguards.',
+        plain_explanation: 'This chapter is there to protect your GDPR, data, and employee privacy rights. Compared to all other offers, this is Market Standard.',
+        benchmark: 'STANDARD',
+        gap_vs_old_policy: 'Matches statutory PDPL & GDPR privacy standard'
+      },
+      {
+        clause_ref: 'Clause 9.4',
+        title: 'Optical & Refractive Coverage Sub-Limit (SAR 2,000)',
+        legal_text_9pt: 'SECTION 9.4 — OPTICAL BENEFIT: The Insurer shall indemnify each Insured Member up to SAR 2,000 per policy year for prescription lenses, frames, and optometry exams with zero waiting period.',
+        plain_explanation: 'ABOVE STANDARD (2x the SAR 1,000 market norm). Directly fixes last year\'s employee complaint about optical coverage.',
+        benchmark: 'ABOVE_STANDARD',
+        gap_vs_old_policy: 'Upgraded from SAR 500 in old policy → SAR 2,000'
+      },
+      {
+        clause_ref: 'Clause 11.3',
+        title: 'Outpatient Physiotherapy Sessions Cap (12 Sessions)',
+        legal_text_9pt: 'SECTION 11.3 — PHYSIOTHERAPY: Outpatient physical therapy is covered up to 12 sessions per policy year subject to prior authorization.',
+        plain_explanation: 'BELOW STANDARD compared to your uploaded contract (which had 20 sessions). Flagged upfront so HR is never blamed.',
+        benchmark: 'BELOW_STANDARD',
+        gap_vs_old_policy: 'Gap detected: 12 sessions vs. 20 sessions in old contract'
+      }
+    ];
+
+    function formatMarkdown(md) {
+      if (!md) return '';
+      return md
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-[11px]">$1</code>')
+        .replace(/\n/g, '<br/>');
+    }
+
+    function renderImageBoxesOverlayHtml(boxes) {
+      if (!boxes || !boxes.length) return '';
+      const overlays = boxes.map(b => {
+        const topPct = (b.box.top * 100).toFixed(1);
+        const leftPct = (b.box.left * 100).toFixed(1);
+        const widthPct = ((b.box.right - b.box.left) * 100).toFixed(1);
+        const heightPct = ((b.box.bottom - b.box.top) * 100).toFixed(1);
+
+        let borderCol = 'border-brand-primary bg-brand-primary/10';
+        let badgeCol = 'bg-brand-primary text-white';
+        let tag = '🔵 MARKET STANDARD';
+        if (b.benchmark === 'ABOVE_STANDARD') {
+          borderCol = 'border-brand-green bg-brand-green/10';
+          badgeCol = 'bg-brand-green text-white';
+          tag = '🟢 ABOVE STANDARD';
+        } else if (b.benchmark === 'BELOW_STANDARD') {
+          borderCol = 'border-brand-red bg-brand-red/10';
+          badgeCol = 'bg-brand-red text-white';
+          tag = '🔴 BELOW STANDARD / GAP';
+        }
+
+        return `
+          <div style="top:${topPct}%;left:${leftPct}%;width:${widthPct}%;height:${heightPct}%" class="absolute border-2 ${borderCol} rounded pointer-events-none flex items-start justify-end p-1">
+            <span class="${badgeCol} text-[9px] font-extrabold px-1.5 py-0.5 rounded shadow-xs">
+              ${tag} • ${b.clause_ref} (${Math.round((b.confidence || 0.85) * 100)}% conf)
+            </span>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="mt-3 pt-3 border-t border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold text-brand-primaryDark uppercase tracking-wider">
+              🖼️ Jev 1.14.0 Visual Bounding Boxes (TypeSafe-Danger-Zone-Images: true):
+            </span>
+            <span class="text-[10px] font-mono text-slate-500">4 parallel box primitives</span>
+          </div>
+          <div class="relative rounded-xl overflow-hidden border border-slate-300 shadow-xs bg-white">
+            <img src="/sample-contract-scan.png" alt="Scanned 9pt Contract" class="w-full h-auto block" />
+            ${overlays}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBoundedBoxesHtml(clauses, imageBoxes = null) {
+      const imageHtml = renderImageBoxesOverlayHtml(imageBoxes);
+      if (!clauses || !clauses.length) return imageHtml;
+      const cards = clauses.map(c => {
+        let boxStyle = 'border-brand-primary bg-brand-heroBg/40';
+        let pillStyle = 'bg-brand-primary text-white';
+        let pillText = '🔵 MARKET STANDARD';
+        if (c.benchmark === 'ABOVE_STANDARD') {
+          boxStyle = 'border-brand-green bg-brand-greenLight/45';
+          pillStyle = 'bg-brand-green text-white';
+          pillText = '🟢 ABOVE STANDARD';
+        } else if (c.benchmark === 'BELOW_STANDARD') {
+          boxStyle = 'border-brand-red bg-rose-50/80';
+          pillStyle = 'bg-brand-red text-white';
+          pillText = '🔴 BELOW STANDARD / GAP';
+        }
+        return `
+          <div class="p-3 rounded-xl border-2 ${boxStyle} space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded ${pillStyle}">${pillText}</span>
+              <span class="text-[10px] font-mono font-bold text-slate-600">${c.clause_ref} • ${c.title}</span>
+            </div>
+            <div class="p-2 rounded bg-white border border-slate-200 contract-font-9 text-slate-700">
+              ${c.legal_text_9pt}
+            </div>
+            <div class="text-xs text-slate-900 font-medium">
+              💡 <strong>Plain Explanation:</strong> ${c.plain_explanation}
+            </div>
+            <div class="text-[11px] text-slate-600">
+              📊 <strong>vs. Uploaded Contract:</strong> ${c.gap_vs_old_policy}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        ${imageHtml}
+        <div class="mt-3 pt-3 border-t border-slate-200 space-y-2">
+          <div class="text-[11px] font-extrabold text-brand-primaryDark uppercase tracking-wider">
+            📑 Font-Size 9 Contract Bounded-Box Breakdown:
+          </div>
+          ${cards}
+        </div>
+      `;
+    }
+
+    function appendUserBubble(text, fileLabel = '') {
+      const stream = document.getElementById('chat-stream');
+      const div = document.createElement('div');
+      div.className = 'max-w-[85%] sm:max-w-[72%] bg-[#DCF8C6] rounded-2xl rounded-tr-xs p-3.5 shadow-xs border border-emerald-200 self-end';
+      div.innerHTML = `
+        <div class="flex items-center justify-between gap-3 mb-1">
+          <span class="text-[11px] font-bold text-emerald-950">Nadia (HR Manager)</span>
+          <span class="text-[10px] text-emerald-700">Just now</span>
+        </div>
+        ${fileLabel ? `<div class="mb-1.5 px-2.5 py-1 rounded bg-white/80 border border-emerald-300 text-[11px] font-mono font-bold text-emerald-900">📎 ${fileLabel}</div>` : ''}
+        <div class="text-xs text-slate-800 leading-relaxed">${formatMarkdown(text)}</div>
+      `;
+      stream.appendChild(div);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function appendThinkingBubble() {
+      const stream = document.getElementById('chat-stream');
+      const div = document.createElement('div');
+      div.id = 'thinking-bubble';
+      div.className = 'max-w-[70%] bg-white rounded-2xl rounded-tl-xs p-3.5 shadow-xs border border-slate-200 self-start text-xs text-slate-500 flex items-center gap-2';
+      div.innerHTML = `
+        <span class="w-2 h-2 rounded-full bg-brand-primary animate-ping"></span>
+        <span>TypeSafe Jev 1.14 running parallel judgments + Gemini generating reply...</span>
+      `;
+      stream.appendChild(div);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function removeThinkingBubble() {
+      const el = document.getElementById('thinking-bubble');
+      if (el) el.remove();
+    }
+
+    function appendAiBubble(data, usage, modelName) {
+      const stream = document.getElementById('chat-stream');
+      const div = document.createElement('div');
+
+      let badgeStyle = 'bg-brand-heroBg text-brand-primaryDark';
+      if (data.guardrail_status === 'POLITE_DEESCALATION') badgeStyle = 'bg-rose-100 text-rose-800';
+      if (data.guardrail_status === 'DISCOUNT_REFUSED') badgeStyle = 'bg-purple-100 text-purple-800';
+      if (data.guardrail_status === 'UNDERWRITER_SLA_WARNING') badgeStyle = 'bg-amber-100 text-amber-900';
+      if (data.guardrail_status === 'CONTRACT_EXPLAINED') badgeStyle = 'bg-brand-greenLight text-brand-greenDark';
+
+      const clausesHtml = ((data.contract_clauses && data.contract_clauses.length) || (data.image_boxes && data.image_boxes.length))
+        ? renderBoundedBoxesHtml(data.contract_clauses, data.image_boxes)
+        : '';
+
+      const tsInfo = data.typesafe_telemetry
+        ? `<div class="mt-2 pt-1.5 border-t border-slate-100 flex flex-wrap items-center gap-2 text-[10px] font-mono text-slate-400">
+             <span>⚡ TypeSafe <strong>${data.typesafe_telemetry.model}</strong> (${data.typesafe_telemetry.latencyMs}ms)</span>
+             <span>• Intent: <strong>${data.typesafe_telemetry.intent || 'n/a'}</strong></span>
+             <span>• Estimate Ready Noul: <strong>${(data.typesafe_telemetry.estimateReadyProb ?? 0).toFixed(2)}</strong></span>
+             ${data.typesafe_telemetry.hasImage ? '<span class="text-brand-greenDark font-bold">• TypeSafe-Danger-Zone-Images: true (4 Box primitives)</span>' : ''}
+           </div>`
+        : '';
+
+      div.className = 'max-w-[90%] sm:max-w-[80%] bg-white rounded-2xl rounded-tl-xs p-4 shadow-xs border border-slate-200/90 self-start';
+      div.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+          <span class="text-[11px] font-extrabold text-brand-primaryDark">Instasurrance AI • Supervised by Tariq Al-Mansour</span>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded ${badgeStyle}">${data.guardrail_label || 'Verified'}</span>
+            <span class="text-[10px] font-mono text-slate-400">+${(usage?.totalTokenCount || 0).toLocaleString()} tok</span>
+          </div>
+        </div>
+        <div class="text-xs text-slate-700 leading-relaxed">${formatMarkdown(data.reply_markdown)}</div>
+        ${clausesHtml}
+        ${tsInfo}
+      `;
+      stream.appendChild(div);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function updatePackagesUI(packages, headcount, estimateReady) {
+      if (!estimateReady && !estimateAlreadyDone) {
+        return;
+      }
+      estimateAlreadyDone = true;
+
+      // Reveal the 3 package suggestions in the sidebar now that the first estimate is done!
+      const emptyEl = document.getElementById('packages-empty-state');
+      const listEl = document.getElementById('packages-list-container');
+      if (emptyEl) emptyEl.classList.add('hidden');
+      if (listEl) listEl.classList.remove('hidden');
+
+      const hcEl = document.getElementById('sidebar-headcount');
+      if (hcEl) {
+        hcEl.textContent = (headcount && headcount > 0 ? headcount : 84) + ' Lives';
+        hcEl.className = 'text-[11px] font-bold px-2 py-0.5 rounded bg-brand-heroBg text-brand-primaryDark';
+      }
+
+      if (!packages || !packages.length) return;
+      for (const pkg of packages) {
+        const scoreEl = document.getElementById('pkg-score-' + pkg.id);
+        const barEl = document.getElementById('pkg-bar-' + pkg.id);
+        const reasonEl = document.getElementById('pkg-reason-' + pkg.id);
+        if (scoreEl) scoreEl.textContent = pkg.match_percent + '% Match';
+        if (barEl) barEl.style.width = Math.max(10, Math.min(100, pkg.match_percent)) + '%';
+        if (reasonEl && pkg.reason) reasonEl.textContent = pkg.reason;
+      }
+    }
+
+    function updateTelemetryUI(usage, modelName) {
+      totalTurns += 1;
+      const turnTokens = usage?.totalTokenCount || 1200;
+      totalTokens += turnTokens;
+      const turnCost = Math.max(0.03, (turnTokens / 1000) * 0.035);
+      totalCostUsd += turnCost;
+
+      document.getElementById('telemetry-turns').textContent = totalTurns;
+      document.getElementById('telemetry-tokens').textContent = totalTokens.toLocaleString();
+      document.getElementById('telemetry-cost').textContent = '$' + totalCostUsd.toFixed(4);
+      if (modelName) {
+        document.getElementById('model-badge').textContent = modelName;
+      }
+    }
+
+    async function callChatBackend(messageText, attachmentObj = null) {
+      const btn = document.getElementById('send-btn');
+      btn.disabled = true;
+      btn.classList.add('opacity-60');
+      appendThinkingBubble();
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            history: chatHistory,
+            message: messageText,
+            attachment: attachmentObj,
+            estimateAlreadyDone
+          })
+        });
+
+        const payload = await res.json();
+        removeThinkingBubble();
+
+        if (!res.ok || payload.error) {
+          throw new Error(payload.error || 'Request failed');
+        }
+
+        const { result, usage, model } = payload;
+        chatHistory.push({ role: 'user', text: messageText });
+        chatHistory.push({ role: 'model', text: result.reply_markdown });
+
+        if (result.contract_clauses && result.contract_clauses.length) {
+          latestClauses = result.contract_clauses;
+        }
+        if (result.image_boxes && result.image_boxes.length) {
+          latestImageBoxes = result.image_boxes;
+        }
+
+        appendAiBubble(result, usage, model);
+        updatePackagesUI(result.packages, result.extracted_headcount, result.estimate_ready);
+        updateTelemetryUI(usage, model);
+      } catch (err) {
+        removeThinkingBubble();
+        appendAiBubble({
+          reply_markdown: `⚠️ **Connection Error:** ${err.message}`,
+          guardrail_status: 'NORMAL',
+          guardrail_label: 'Error'
+        }, { totalTokenCount: 0 });
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('opacity-60');
+      }
+    }
+
+    function sendUserMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text && !pendingAttachment) return;
+
+      const msg = text || 'Please analyze the attached policy document and highlight any coverage gaps with bounded boxes.';
+      const fileLabel = pendingAttachment ? pendingAttachment.name : '';
+      const attachmentToSend = pendingAttachment;
+
+      input.value = '';
+      clearAttachment();
+      appendUserBubble(msg, fileLabel);
+      callChatBackend(msg, attachmentToSend);
+    }
+
+    function sendQuickPrompt(promptText) {
+      appendUserBubble(promptText);
+      callChatBackend(promptText, null);
+    }
+
+    function sendSampleContractScan() {
+      const prompt = 'Here is a scan of our 9pt SME Health Policy schedule (84 employees). Use Jev 1.14 Box + Images to locate the clauses (60-day claim window, PDPL privacy, SAR 2,000 optical, 12-session physiotherapy) and unlock our package estimate.';
+      appendUserBubble(prompt, 'sample-contract-scan.png (TypeSafe-Danger-Zone-Images: true)');
+      callChatBackend(prompt, {
+        name: 'sample-contract-scan.png',
+        useSampleContractScan: true
+      });
+    }
+
+    function sendSampleContractDump() {
+      const sampleContractText = `
+OLD POLICY DOCUMENT (2025): Al Noor Logistics LLC (CR #1010849201)
+Total Census: 84 Insured Lives (52 Employees, 32 Dependents) in Riyadh & Jeddah.
+Clause 4.2 (Claim Reimbursement Window): Insured members must submit out-of-network claims within 30 calendar days.
+Clause 7.1 (Data Protection): Standard PDPL / GDPR medical confidentiality applies.
+Clause 9.4 (Optical Benefit): Covered up to SAR 500 per member per year.
+Clause 11.3 (Physiotherapy): Covered up to 20 sessions per policy year.
+`;
+      const prompt = 'I just dumped our old 2025 health contract (9pt PDF) and our 84-employee census. Please explain the key clauses in plain words with Above Standard / Standard / Below Standard bounded boxes and tell me which package matches best.';
+      appendUserBubble(prompt, 'Al_Noor_2025_Policy_9pt.pdf + Census_84_Lives.xlsx');
+      callChatBackend(prompt, {
+        name: 'Al_Noor_2025_Policy_9pt.pdf',
+        mimeType: 'text/plain',
+        textContent: sampleContractText
+      });
+    }
+
+    function handleFileSelect(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
+        reader.onload = () => {
+          const base64 = reader.result.split(',')[1];
+          pendingAttachment = {
+            name: file.name,
+            mimeType: file.type,
+            data: base64
+          };
+          document.getElementById('attachment-name').textContent = file.name;
+          document.getElementById('attachment-banner').classList.remove('hidden');
+          document.getElementById('attachment-banner').classList.add('flex');
+        };
+        reader.readAsDataURL(file);
+      } else {
+        reader.onload = () => {
+          pendingAttachment = {
+            name: file.name,
+            mimeType: file.type || 'text/plain',
+            textContent: reader.result
+          };
+          document.getElementById('attachment-name').textContent = file.name;
+          document.getElementById('attachment-banner').classList.remove('hidden');
+          document.getElementById('attachment-banner').classList.add('flex');
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    function clearAttachment() {
+      pendingAttachment = null;
+      document.getElementById('file-input').value = '';
+      document.getElementById('attachment-banner').classList.add('hidden');
+      document.getElementById('attachment-banner').classList.remove('flex');
+    }
+
+    function openContractDrawer() {
+      const container = document.getElementById('contract-clauses-list');
+      container.innerHTML = renderBoundedBoxesHtml(latestClauses, latestImageBoxes);
+      const modal = document.getElementById('contract-drawer');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeContractDrawer() {
+      const modal = document.getElementById('contract-drawer');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function openCertificateModal() {
+      const modal = document.getElementById('certificate-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeCertificateModal() {
+      const modal = document.getElementById('certificate-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function openHandoverModal() {
+      const email = document.getElementById('hr-email').value;
+      const json = {
+        channel: 'whatsapp_ai_mvp',
+        supervising_account_manager: {
+          name: 'Tariq Al-Mansour',
+          license: 'IA-8842',
+          blame_shield_certificate: 'CERT-2026-88412'
+        },
+        applicant: {
+          email_typed: email,
+          whatsapp_name_auto: 'Nadia (HR Manager)',
+          whatsapp_phone_auto: '+966554198821'
+        },
+        selected_predetermined_package: {
+          package_id: 'gold_plus',
+          name: 'SME Gold Plus',
+          lives: 84,
+          annual_total_sar: 318360,
+          instant_issuance: true
+        },
+        gemini_session_telemetry: {
+          turns: totalTurns,
+          total_tokens: totalTokens,
+          session_cost_usd: +totalCostUsd.toFixed(4)
+        }
+      };
+      document.getElementById('handover-json').textContent = JSON.stringify(json, null, 2);
+      const modal = document.getElementById('handover-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeHandoverModal() {
+      const modal = document.getElementById('handover-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  </script>
+</body>
+</html>
