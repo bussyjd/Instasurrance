@@ -1,0 +1,134 @@
+{
+  "version": "1.0.0",
+  "domain": "KSA_SME_HEALTH_INSURANCE",
+  "account_manager_oversight": {
+    "name": "Tariq Al-Mansour",
+    "role": "Senior SME Health Account Manager",
+    "license_id": "IA-8842",
+    "certificate_name": "HR Coverage Benchmark Certificate (Blame Shield)"
+  },
+  "underwriting_rules": {
+    "predetermined_instant_max_lives": 999,
+    "custom_underwriting_min_lives": 1000,
+    "custom_underwriter_sla_business_days": 3,
+    "manual_sla_triggers": [
+      "0% outpatient copay / zero deductible",
+      "1,000 or more insured lives",
+      "Custom hospital network overrides outside Tier 4 / Tier 5 / Tier 7",
+      "Unlisted international elective treatment riders"
+    ]
+  },
+  "ksa_market_benchmarks": {
+    "annual_aggregate_limit_sar": 1000000,
+    "claim_reporting_window_standard_days": 30,
+    "optical_sublimit_standard_sar": 1000,
+    "maternity_sublimit_standard_sar": 10000,
+    "maternity_waiting_period_standard_days": 30,
+    "outpatient_copay_standard_percent": 20,
+    "outpatient_copay_cap_standard_sar": 75,
+    "physiotherapy_prior_corporate_policy_sessions": 20,
+    "privacy_standard": "KSA PDPL & EU GDPR Medical Confidentiality"
+  },
+  "predetermined_packages": [
+    {
+      "id": "gold_plus",
+      "name": "SME Gold Plus",
+      "annual_premium_per_member_sar": 3790,
+      "instant_binding": true,
+      "hospital_network": "Tier 7 VIP Network",
+      "outpatient_copay": "10% (capped at SAR 50)",
+      "optical_sublimit_sar": 2000,
+      "optical_benchmark": "ABOVE_STANDARD",
+      "claim_reporting_window_days": 60,
+      "claim_window_benchmark": "ABOVE_STANDARD",
+      "maternity_sublimit_sar": 15000,
+      "maternity_waiting_days": 0,
+      "maternity_benchmark": "ABOVE_STANDARD",
+      "dental_sublimit_sar": 2500,
+      "physiotherapy_sessions": 12,
+      "physiotherapy_benchmark": "BELOW_STANDARD",
+      "optional_riders": [
+        {
+          "id": "unlimited_rehab_rider",
+          "name": "Unlimited Outpatient Physiotherapy & Rehab Rider",
+          "additional_premium_per_member_sar": 140,
+          "resolves_gap": "Clause 11.3 Physiotherapy Cap (restores 20+ sessions/year)"
+        }
+      ]
+    },
+    {
+      "id": "silver_care",
+      "name": "Business Care Silver",
+      "annual_premium_per_member_sar": 3270,
+      "instant_binding": true,
+      "hospital_network": "Tier 5 Standard Plus Network",
+      "outpatient_copay": "20% (capped at SAR 75)",
+      "optical_sublimit_sar": 1000,
+      "optical_benchmark": "STANDARD",
+      "claim_reporting_window_days": 30,
+      "claim_window_benchmark": "STANDARD",
+      "maternity_sublimit_sar": 10000,
+      "maternity_waiting_days": 30,
+      "maternity_benchmark": "STANDARD",
+      "dental_sublimit_sar": 1500,
+      "physiotherapy_sessions": 12,
+      "physiotherapy_benchmark": "BELOW_STANDARD"
+    },
+    {
+      "id": "essential_saver",
+      "name": "Essential Saver SME",
+      "annual_premium_per_member_sar": 2730,
+      "instant_binding": true,
+      "hospital_network": "Tier 4 Essential Network",
+      "outpatient_copay": "20% (capped at SAR 100)",
+      "optical_sublimit_sar": 500,
+      "optical_benchmark": "BELOW_STANDARD",
+      "claim_reporting_window_days": 30,
+      "claim_window_benchmark": "STANDARD",
+      "maternity_sublimit_sar": 7500,
+      "maternity_waiting_days": 90,
+      "maternity_benchmark": "BELOW_STANDARD",
+      "dental_sublimit_sar": 800,
+      "physiotherapy_sessions": 6,
+      "physiotherapy_benchmark": "BELOW_STANDARD"
+    }
+  ],
+  "contract_clauses_9pt": [
+    {
+      "id": "claim_window_box",
+      "clause_ref": "Clause 4.2",
+      "title": "Reimbursement Claim Reporting Window (60 Days)",
+      "legal_text_9pt": "The Insured Member or Policyholder may submit out-of-network emergency or authorized reimbursement claims within sixty (60) calendar days from the date of medical discharge or service delivery, exceeding the statutory thirty (30) day market minimum.",
+      "plain_explanation": "Employees get 60 full days (instead of the usual 30 days) to submit paper/PDF receipts for reimbursement—protecting HR from late-claim complaints.",
+      "benchmark": "ABOVE_STANDARD",
+      "gap_vs_old_policy": "+30 extra days compared to expiring policy (30 days)"
+    },
+    {
+      "id": "privacy_box",
+      "clause_ref": "Clause 7.1",
+      "title": "KSA PDPL & GDPR Medical Data Privacy",
+      "legal_text_9pt": "All member health declarations, diagnostic codes (ICD-10), and NPHIES claim records are encrypted and processed strictly under the Saudi Personal Data Protection Law (PDPL) and EU GDPR medical confidentiality standards. Individual diagnoses are never disclosed to the Employer/HR.",
+      "plain_explanation": "Protects both employee medical privacy and HR liability under Saudi PDPL & GDPR—HR never touches raw diagnostic files.",
+      "benchmark": "STANDARD",
+      "gap_vs_old_policy": "Matches statutory KSA PDPL & NPHIES privacy mandate"
+    },
+    {
+      "id": "optical_box",
+      "clause_ref": "Clause 9.4",
+      "title": "Optical & Refractive Sub-Limit (SAR 2,000)",
+      "legal_text_9pt": "Coverage includes prescription spectacles, frames, and corrective contact lenses up to SAR 2,000 per insured member per policy year with zero waiting period and zero co-payment at network optical providers (KSA SME market benchmark: SAR 1,000).",
+      "plain_explanation": "Doubles the market-standard optical allowance to SAR 2,000/yr with zero wait—eliminating the #1 employee complaint on SME renewals.",
+      "benchmark": "ABOVE_STANDARD",
+      "gap_vs_old_policy": "+SAR 1,600 upgrade vs. expiring policy (SAR 400)"
+    },
+    {
+      "id": "physio_box",
+      "clause_ref": "Clause 11.3",
+      "title": "Outpatient Physiotherapy Sessions Cap (12 Sessions)",
+      "legal_text_9pt": "Medically necessary outpatient physiotherapy and rehabilitation is limited to twelve (12) sessions per policy year per member upon specialist referral (Note: Prior policy covered 20 sessions/year; optional Unlimited Rehab Rider available at +SAR 140/member).",
+      "plain_explanation": "Capped at 12 sessions/year vs. 20 sessions in your expiring contract. Disclosed upfront so HR can either accept or add the +SAR 140/member Rehab Rider.",
+      "benchmark": "BELOW_STANDARD",
+      "gap_vs_old_policy": "-8 sessions vs. expiring policy (can be closed with +SAR 140 rider)"
+    }
+  ]
+}
